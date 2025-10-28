@@ -1,14 +1,10 @@
 import { pgTable, varchar } from "drizzle-orm/pg-core";
 import { createdAt, updatedAt } from "../schemaHelpers";
 
-export const UserTable = pgTable("users", {
+export const OrganizationTable = pgTable("organizations", {
     id: varchar().primaryKey(),
     name: varchar().notNull(),
-    email: varchar().notNull().unique(),
-    imageUrl: varchar().notNull(),
+    imageUrl: varchar(),
     createdAt,
     updatedAt
 })
-
-
-
