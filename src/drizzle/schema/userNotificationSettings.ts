@@ -3,8 +3,7 @@ import { UserTable } from "./user";
 import { createdAt, updatedAt } from "../schemaHelpers";
 import { relations } from "drizzle-orm";
 
-export const UserNotificationSettingsTable = pgTable(
-  "user_notification_settings",
+export const UserNotificationSettingsTable = pgTable("user_notification_settings",
   {
     userId: varchar().primaryKey().references(() => UserTable.id),
     newJobEmailNotifications: boolean().notNull(),
