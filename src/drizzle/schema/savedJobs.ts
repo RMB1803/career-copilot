@@ -21,5 +21,5 @@ export const savedJobsRelations = relations(SavedJobsTable, ({one}) => ({
     job: one(ScrapedJobsTable, {
         fields: [SavedJobsTable.jobId],
         references: [ScrapedJobsTable.id]
-    })
+    })  
 }))
