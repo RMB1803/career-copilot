@@ -1,11 +1,13 @@
 CREATE TYPE "public"."question_types" AS ENUM('Behavioral', 'Technical', 'Situational');--> statement-breakpoint
 CREATE TABLE "users" (
 	"id" varchar PRIMARY KEY NOT NULL,
+	"clerk_id" varchar NOT NULL,
 	"name" varchar NOT NULL,
 	"email" varchar NOT NULL,
-	"imageUrl" varchar NOT NULL,
+	"image_url" varchar NOT NULL,
 	"createdAt" timestamp with time zone DEFAULT now() NOT NULL,
 	"updatedAt" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "users_clerk_id_unique" UNIQUE("clerk_id"),
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
@@ -87,4 +89,6 @@ ALTER TABLE "generated_cover_letters" ADD CONSTRAINT "generated_cover_letters_us
 ALTER TABLE "generated_cover_letters" ADD CONSTRAINT "generated_cover_letters_jobId_scraped_jobs_id_fk" FOREIGN KEY ("jobId") REFERENCES "public"."scraped_jobs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "interview_sessions" ADD CONSTRAINT "interview_sessions_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "interview_sessions" ADD CONSTRAINT "interview_sessions_jobId_scraped_jobs_id_fk" FOREIGN KEY ("jobId") REFERENCES "public"."scraped_jobs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "interview_qna" ADD CONSTRAINT "interview_qna_interviewSessionId_interview_sessions_id_fk" FOREIGN KEY ("interviewSessionId") REFERENCES "public"."interview_sessions"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "interview_qna" ADD CONSTRAINT "interview_qna_interviewSessionId_interview_sessions_id_fk" FOREIGN KEY ("interviewSessionId") REFERENCES "public"."interview_sessions"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "clerk_id_index" ON "users" USING btree ("clerk_id");--> statement-breakpoint
+CREATE INDEX "email_index" ON "users" USING btree ("email");

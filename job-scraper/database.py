@@ -1,7 +1,3 @@
-"""
-database.py — PostgreSQL connection manager and upsert logic.
-"""
-
 from __future__ import annotations
 
 import os
@@ -14,16 +10,12 @@ from dotenv import load_dotenv
 
 from utils import logger
 
-# ---------------------------------------------------------------------------
 # Resolve the project-root .env file
-# ---------------------------------------------------------------------------
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _ENV_PATH = _PROJECT_ROOT / ".env"
 load_dotenv(dotenv_path=_ENV_PATH)
 
-# ---------------------------------------------------------------------------
 # SQL
-# ---------------------------------------------------------------------------
 UPSERT_SQL = """
 INSERT INTO scraped_jobs (
     title, "companyName", description, wage,
@@ -37,10 +29,8 @@ INSERT INTO scraped_jobs (
 ON CONFLICT ("sourceUrl") DO NOTHING;
 """
 
-
-# ═══════════════════════════════════════════════════════════════════════════
 # DatabaseManager
-# ═══════════════════════════════════════════════════════════════════════════
+
 class DatabaseManager:
     """Manages PostgreSQL connections and performs upsert operations.
 

@@ -1,7 +1,3 @@
-"""
-utils.py — Shared constants and helper functions for the job scraper.
-"""
-
 from __future__ import annotations
 
 import asyncio
@@ -10,9 +6,7 @@ import random
 import re
 from typing import Optional
 
-# ---------------------------------------------------------------------------
 # Logging
-# ---------------------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  [%(levelname)s]  %(name)s — %(message)s",
@@ -20,9 +14,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("scraper_engine")
 
-# ---------------------------------------------------------------------------
 # Constants
-# ---------------------------------------------------------------------------
 MAX_JOBS_PER_SOURCE = 15
 HUMAN_DELAY_MIN = 1.0
 HUMAN_DELAY_MAX = 4.0
@@ -35,10 +27,7 @@ VIEWPORT_POOL: list[dict[str, int]] = [
     {"width": 1280, "height": 720},
 ]
 
-
-# ---------------------------------------------------------------------------
 # Helper functions
-# ---------------------------------------------------------------------------
 async def human_delay(lo: float = HUMAN_DELAY_MIN, hi: float = HUMAN_DELAY_MAX) -> None:
     """Sleep a random interval to mimic human pacing."""
     await asyncio.sleep(random.uniform(lo, hi))

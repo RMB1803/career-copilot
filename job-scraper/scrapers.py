@@ -20,10 +20,8 @@ from utils import (
     logger,
 )
 
-
-# ═══════════════════════════════════════════════════════════════════════════
 # PythonOrgScraper
-# ═══════════════════════════════════════════════════════════════════════════
+
 class PythonOrgScraper:
     """Scrapes job listings from https://www.python.org/jobs/.
 
@@ -66,8 +64,6 @@ class PythonOrgScraper:
 
         logger.info("━━  PythonOrgScraper  ━━  done.  Inserted %d new jobs.", inserted)
         return inserted
-
-    # -- internal -----------------------------------------------------------
 
     async def _parse_listing_page(self) -> list[dict[str, Any]]:
         """Extract basic metadata from every <li> in ol.list-recent-jobs."""
@@ -163,10 +159,8 @@ class PythonOrgScraper:
             "postedAt": card.get("postedAt"),
         }
 
-
-# ═══════════════════════════════════════════════════════════════════════════
 # SimplifyJobsScraper
-# ═══════════════════════════════════════════════════════════════════════════
+
 class SimplifyJobsScraper:
     """Scrapes job listings from https://simplify.jobs/.
 
@@ -220,7 +214,6 @@ class SimplifyJobsScraper:
         logger.info("━━  SimplifyJobsScraper  ━━  done.  Inserted %d new jobs.", inserted)
         return inserted
 
-    # -- API interception ---------------------------------------------------
 
     async def _on_response(self, response: Response) -> None:
         """Callback for every network response. Captures JSON job data."""
@@ -235,7 +228,7 @@ class SimplifyJobsScraper:
             body = await response.json()
             self._extract_jobs_from_json(body, url)
         except Exception:
-            pass  # Silently skip non-JSON or unreadable responses
+            pass  
 
     def _extract_jobs_from_json(self, data: Any, url: str) -> None:
         """Recursively look for job-like objects in the JSON payload."""
