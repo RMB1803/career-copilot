@@ -1,0 +1,15 @@
+name: "Daily Job Scraper"
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */4 * * *"
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t career-copilot-scraper ./job-scraper
+      - name: Run the container
+        run: docker run -e DATABASE_URL="${{ secrets.NEON_DATABASE_URL }}" career-copilot-scraper

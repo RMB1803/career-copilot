@@ -27,7 +27,6 @@ VIEWPORT_POOL: list[dict[str, int]] = [
     {"width": 1280, "height": 720},
 ]
 
-# Helper functions
 async def human_delay(lo: float = HUMAN_DELAY_MIN, hi: float = HUMAN_DELAY_MAX) -> None:
     """Sleep a random interval to mimic human pacing."""
     await asyncio.sleep(random.uniform(lo, hi))

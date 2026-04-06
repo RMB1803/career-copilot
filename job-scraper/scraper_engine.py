@@ -1,10 +1,3 @@
-"""
-scraper_engine.py — Lightweight entry-point for the job scraping microservice.
-
-Orchestrates PythonOrgScraper and SimplifyJobsScraper via a StealthBrowser,
-inserting results into PostgreSQL through DatabaseManager.
-"""
-
 from __future__ import annotations
 
 import asyncio

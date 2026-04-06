@@ -1,7 +1,3 @@
-"""
-browser.py — Stealth Playwright browser launcher with anti-bot measures.
-"""
-
 from __future__ import annotations
 
 import random
@@ -18,9 +14,6 @@ from playwright.async_api import (
 from utils import VIEWPORT_POOL, logger
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# StealthBrowser
-# ═══════════════════════════════════════════════════════════════════════════
 class StealthBrowser:
     """Context manager that yields a stealth Playwright ``Page``.
 
