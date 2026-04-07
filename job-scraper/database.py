@@ -67,10 +67,14 @@ class DatabaseManager:
             else:
                 self.conn = psycopg2.connect(self._dsn())
             self.conn.autocommit = True
-            logger.info(
-                "Connected to PostgreSQL  %s@%s:%s/%s",
-                self.user, self.host, self.port, self.dbname,
-            )
+            
+            if self.db_url:
+                self.conn = psycopg2.connect(self.db_url)
+                logger.info("Connected to PostgreSQL via Cloud URL.")
+            else:
+                self.conn = psycopg2.connect(self._dsn())
+                logger.info("Connected to PostgreSQL %s@%s:%s/%s", self.user, self.host, self.port, self.dbname)
+                
         except psycopg2.Error as exc:
             logger.error("Failed to connect to PostgreSQL: %s", exc)
             raise
