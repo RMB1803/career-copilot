@@ -39,6 +39,8 @@ class DatabaseManager:
     """
 
     def __init__(self) -> None:
+
+        self.db_url = os.getenv("DATABASE_URL")
         self.host = os.getenv("DB_HOST", "localhost")
         self.port = os.getenv("DB_PORT", "5432")
         self.user = os.getenv("DB_USER", "postgres")
@@ -60,7 +62,10 @@ class DatabaseManager:
         if self.conn and not self.conn.closed:
             return
         try:
-            self.conn = psycopg2.connect(self._dsn())
+            if self.db_url:
+                self.conn = psycopg2.connect(self.db_url)
+            else:
+                self.conn = psycopg2.connect(self._dsn())
             self.conn.autocommit = True
             logger.info(
                 "Connected to PostgreSQL  %s@%s:%s/%s",
