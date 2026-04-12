@@ -1,13 +1,15 @@
-import { pgTable, varchar } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, varchar } from "drizzle-orm/pg-core";
 import { UserTable } from "./user";
 import { createdAt, updatedAt } from "../schemaHelpers";
 import { relations } from "drizzle-orm";
 
 export const UserResumeTable = pgTable("user_resumes", {
   userId: varchar().primaryKey().references(() => UserTable.id),
-  resumeFileUrl: varchar().notNull(),
-  resumeFileKey: varchar().notNull(),
+  resumeFileUrl: varchar(),
+  resumeFileKey: varchar(),
   aiSummary: varchar(),
+  reviewData: jsonb(),
+  matchData: jsonb(),
   createdAt,
   updatedAt,
 })
