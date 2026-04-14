@@ -15,6 +15,13 @@
       "when": 1775747553990,
       "tag": "0001_wide_scrambler",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776149231944,
+      "tag": "0002_sharp_proudstar",
+      "breakpoints": true
     }
   ]
 }

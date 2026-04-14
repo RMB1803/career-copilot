@@ -1,0 +1,1 @@
+ALTER TABLE "saved_jobs" ALTER COLUMN "aiMatchScore" DROP NOT NULL;

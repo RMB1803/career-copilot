@@ -8,7 +8,7 @@ export const SavedJobsTable = pgTable("saved_jobs", {
     id: uuid().primaryKey().defaultRandom(),
     userId: varchar().notNull().references(() => UserTable.id),
     jobId: uuid().notNull().references(() => ScrapedJobsTable.id),
-    aiMatchScore: integer().notNull(),
+    aiMatchScore: integer(),
     createdAt,
     updatedAt
 })

@@ -1,6 +1,6 @@
-import { MapPin, Briefcase, Building, Sparkles, Bookmark } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { MapPin, Briefcase, Building, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { SaveJobButton } from '@/components/jobs/save-job-button';
 
 export interface Job {
   id: string;
@@ -10,8 +10,10 @@ export interface Job {
   location: string;
   type: string; // Remote / On-site
   experience: string;
-  matchScore: number;
+  matchScore?: number;
   description?: string;
+  sourceUrl?: string;
+  isSaved?: boolean;
 }
 
 export interface JobCardProps {
@@ -53,30 +55,25 @@ export function JobCard({ job, onClick }: JobCardProps) {
           </span>
         </div>
 
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2 flex items-center pt-2 border-t border-zinc-100 dark:border-zinc-800 w-fit pr-4">
-          <Sparkles className="mr-1.5 h-4 w-4 text-teal-500 flex-shrink-0" />
-          <span className="font-medium text-zinc-700 dark:text-zinc-300">Strong match</span>
-          <span className="ml-1 opacity-80">based on your resume</span>
-        </p>
+        {/* Only show the AI match text when a matchScore exists */}
+        {job.matchScore !== undefined && (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2 flex items-center pt-2 border-t border-zinc-100 dark:border-zinc-800 w-fit pr-4">
+            <Sparkles className="mr-1.5 h-4 w-4 text-teal-500 flex-shrink-0" />
+            <span className="font-medium text-zinc-700 dark:text-zinc-300">Strong match</span>
+            <span className="ml-1 opacity-80">based on your resume</span>
+          </p>
+        )}
       </div>
 
       <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-4 shrink-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800 pt-4 sm:pt-0 w-full sm:w-auto">
-        <Badge variant="outline" className="px-3 py-1 bg-teal-50 dark:bg-teal-950/40 border-teal-200 dark:border-teal-900 text-teal-700 dark:text-teal-400 font-bold text-sm inline-flex items-center shadow-sm">
-          {job.matchScore}% Match
-        </Badge>
+        {/* Only show the match score badge when matchScore is provided */}
+        {job.matchScore !== undefined && (
+          <Badge variant="outline" className="px-3 py-1 bg-teal-50 dark:bg-teal-950/40 border-teal-200 dark:border-teal-900 text-teal-700 dark:text-teal-400 font-bold text-sm inline-flex items-center shadow-sm">
+            {job.matchScore}% Match
+          </Badge>
+        )}
         
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-zinc-400 hover:text-teal-600 dark:text-zinc-500 dark:hover:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/50"
-          onClick={(e) => {
-            e.stopPropagation();
-            // Handle save action
-          }}
-        >
-          <Bookmark className="h-5 w-5" />
-          <span className="sr-only">Save Job</span>
-        </Button>
+        <SaveJobButton jobId={job.id} initialIsSaved={job.isSaved} />
       </div>
     </div>
   );

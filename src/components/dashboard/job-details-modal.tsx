@@ -25,15 +25,22 @@ export function JobDetailsModal({ job, isOpen, onClose }: JobDetailsModalProps) 
             <span className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-2.5 py-1 rounded-lg"><Briefcase className="mr-1.5 h-3.5 w-3.5 text-zinc-400" />{job.type}</span>
             <span className="flex items-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-2.5 py-1 rounded-lg">{job.experience}</span>
           </div>
-          <DialogDescription className="mt-5 inline-flex items-center gap-2 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 font-medium px-4 py-2 rounded-xl border border-teal-200/60 dark:border-teal-900/80 shadow-sm w-fit">
-            <Sparkles className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-            <span>AI Match Score: <strong className="text-teal-900 dark:text-teal-100">{job.matchScore}%</strong> based on your profile alignment.</span>
-          </DialogDescription>
+          {/* Only show the AI match score when matchScore is available */}
+          {job.matchScore !== undefined ? (
+            <DialogDescription className="mt-5 inline-flex items-center gap-2 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 font-medium px-4 py-2 rounded-xl border border-teal-200/60 dark:border-teal-900/80 shadow-sm w-fit">
+              <Sparkles className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+              <span>AI Match Score: <strong className="text-teal-900 dark:text-teal-100">{job.matchScore}%</strong> based on your profile alignment.</span>
+            </DialogDescription>
+          ) : (
+            <DialogDescription className="mt-5 text-sm text-zinc-500 dark:text-zinc-400">
+              View the full job details and apply below.
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <div className="max-h-[60vh] md:max-h-[55vh] overflow-y-auto p-6 sm:p-8 text-zinc-700 dark:text-zinc-300 prose prose-zinc prose-sm sm:prose-base dark:prose-invert max-w-none">
           {job.description ? (
-            <div dangerouslySetInnerHTML={{ __html: job.description }} />
+            <div className="whitespace-pre-wrap">{job.description}</div>
           ) : (
             <div className="space-y-6">
               <div>
@@ -71,7 +78,12 @@ export function JobDetailsModal({ job, isOpen, onClose }: JobDetailsModalProps) 
               Suggest Resume Changes
             </Button>
           </div>
-          <Button className="w-full sm:w-auto px-8 py-6 sm:py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900 font-bold shadow-md transition-transform active:scale-[0.98] shrink-0 order-1 sm:order-2 text-base sm:text-sm rounded-xl sm:rounded-lg" size="lg">
+          <Button
+            className="w-full sm:w-auto px-8 py-6 sm:py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900 font-bold shadow-md transition-transform active:scale-[0.98] shrink-0 order-1 sm:order-2 text-base sm:text-sm rounded-xl sm:rounded-lg"
+            size="lg"
+            disabled={!job.sourceUrl}
+            onClick={() => job.sourceUrl && window.open(job.sourceUrl, "_blank")}
+          >
             Apply Now
           </Button>
         </DialogFooter>

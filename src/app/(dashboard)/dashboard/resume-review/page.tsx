@@ -7,21 +7,9 @@ import { db } from "@/drizzle/db";
 import { UserTable, UserResumeTable } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
-import {
-  FileText,
-  CheckCircle2,
-  AlertTriangle,
-  ArrowLeft,
-} from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FileText, CheckCircle2, AlertTriangle, ArrowLeft } from "lucide-react";
 
-// TypeScript type for the reviewData JSON stored in the database.
-// Matches the Zod schema defined in src/actions/analyser.ts.
 type ReviewData = {
   summary: string;
   strengths: string[];
@@ -29,15 +17,9 @@ type ReviewData = {
 };
 
 export default async function ResumeReviewPage() {
-  // ── Step 1: Authentication ─────────────────────────────────────────
-  // auth() is a Clerk helper that reads the session cookie on the server.
-  // If the user isn't logged in, redirect them to the sign-in page.
   const { userId: clerkId } = await auth();
   if (!clerkId) redirect("/sign-in");
 
-  // ── Step 2: Resolve internal user ID ───────────────────────────────
-  // Clerk gives us an external ID (clerkId). Our database uses its own
-  // primary key, so we map clerkId → internal id.
   const userRecord = await db
     .select({ id: UserTable.id })
     .from(UserTable)
@@ -47,7 +29,6 @@ export default async function ResumeReviewPage() {
   const internalUserId = userRecord[0]?.id;
   if (!internalUserId) redirect("/sign-in");
 
-  // ── Step 3: Fetch resume review data ───────────────────────────────
   const resumeRecord = await db
     .select({ reviewData: UserResumeTable.reviewData })
     .from(UserResumeTable)
@@ -56,9 +37,6 @@ export default async function ResumeReviewPage() {
 
   const reviewData = resumeRecord[0]?.reviewData as ReviewData | undefined;
 
-  // ── Step 4: Empty state ────────────────────────────────────────────
-  // If the user hasn't uploaded a resume yet, show a helpful message
-  // instead of an empty or broken page.
   if (!reviewData) {
     return (
       <div className="max-w-2xl mx-auto flex flex-col items-center justify-center gap-6 py-24 text-center animate-in fade-in duration-500">
@@ -86,7 +64,6 @@ export default async function ResumeReviewPage() {
     );
   }
 
-  // ── Step 5: Render the three review sections ───────────────────────
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 w-full animate-in fade-in duration-500">
       {/* Page header */}
