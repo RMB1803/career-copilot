@@ -80,6 +80,10 @@ export async function RecommendedJobs() {
     .where(eq(UserResumeTable.userId, internalUserId))
     .limit(1);
 
+  console.log("=== DEBUG RECOMMENDED JOBS ===");
+  console.log("Internal User ID looking for resume:", internalUserId);
+  console.log("Did we find a resume row?:", resumeRecord);
+
   const matchData = resumeRecord[0]?.matchData as MatchData | undefined;
 
   // If no resume exists, show a helpful empty state

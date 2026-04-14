@@ -7,6 +7,7 @@ import { db } from "@/drizzle/db";
 import { UserResumeTable, UserTable } from "@/drizzle/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
 
@@ -133,6 +134,7 @@ export async function analyseResume(formData: FormData) {
             }
         });
 
+        revalidatePath("/dashboard");
         return {success: true, data: response.userReview};
     } catch (error) {
         console.log("Resume Processing error: ", error);
