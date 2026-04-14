@@ -1,26 +1,12 @@
 "use server"
 
 import { GoogleGenAI } from "@google/genai";
-import {PDFParse} from "pdf-parse";
+import { CanvasFactory } from "pdf-parse/worker"
+import { PDFParse } from "pdf-parse";
 import { db } from "@/drizzle/db";
 import { UserResumeTable, UserTable } from "@/drizzle/schema";
-import z from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-
-const resumeSchema = z.object({
-    userReview: z.object({
-        strengths: z.array(z.string()).describe("Strengths of the resume of the user"),
-        weaknesses: z.array(z.string()).describe("Weaknesses/Areas of improvement in the user's resume."),
-        summary: z.string().describe("Summary of the user's resume."),
-    }),
-    matchData: z.object({
-        coreSkills: z.array(z.string()).describe("Core skills of the user"),
-        yearsOfExperience: z.number().describe("Total years of experience of the user"),
-        primaryJobTitles: z.array(z.string()).describe("Primary job titles of the user"),
-    })
-});
 
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
 
@@ -50,7 +36,7 @@ export async function analyseResume(formData: FormData) {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        const parser = new PDFParse({data:buffer});
+        const parser = new PDFParse({data:buffer, CanvasFactory});
         const rawText = await parser.getText();
 
         await parser.destroy();
@@ -73,20 +59,62 @@ export async function analyseResume(formData: FormData) {
 
         RESUME TEXT TO ANALYZE:
         ${result}
+
+        MUST RETURN STRICTLY THIS JSON FORMAT:
+        {
+            "userReview": {
+                "strengths": ["...", "..."],
+                "weaknesses": ["...", "..."],
+                "summary": "..."
+            },
+            "matchData": {
+                "coreSkills": ["...", "..."],
+                "yearsOfExperience": 0,
+                "primaryJobTitles": ["...", "..."]
+            }
+        }
         `;
 
         const resumeResponse = await ai.models.generateContent({
-            model: "gemini-3-flash-preview",
+            // Let's also upgrade to 3.1-flash for better JSON adherence
+            model: "gemini-3-flash-preview", 
             contents: prompt, 
             config: {
                 responseMimeType: "application/json",
-                responseJsonSchema: zodToJsonSchema(resumeSchema as any) as any,
+                responseJsonSchema: {
+                    type: "object",
+                    properties: {
+                        userReview: {
+                            type: "object",
+                            properties: {
+                                strengths: { type: "array", items: { type: "string" } },
+                                weaknesses: { type: "array", items: { type: "string" } },
+                                summary: { type: "string" }
+                            },
+                            required: ["strengths", "weaknesses", "summary"]
+                        },
+                        matchData: {
+                            type: "object",
+                            properties: {
+                                coreSkills: { type: "array", items: { type: "string" } },
+                                yearsOfExperience: { type: "integer" },
+                                primaryJobTitles: { type: "array", items: { type: "string" } }
+                            },
+                            required: ["coreSkills", "yearsOfExperience", "primaryJobTitles"]
+                        }
+                    },
+                    required: ["userReview", "matchData"]
+                }
             },
         });
     
         if(!resumeResponse.text) {
             throw new Error("Failed to generate response from AI");
         }
+
+        console.log("=== RAW GEMINI JSON ===");
+        console.log(resumeResponse.text);
+        console.log("=======================");
 
         const response = JSON.parse(resumeResponse.text);
     

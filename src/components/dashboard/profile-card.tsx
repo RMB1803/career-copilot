@@ -1,8 +1,48 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Upload, Clock, Sparkles } from 'lucide-react';
+"use client"; // Required: enables React hooks (useRef, useTransition, useRouter) in this component
+
+import { useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Upload, Clock, Sparkles, Loader2 } from "lucide-react";
+import { analyseResume } from "@/actions/analyser";
 
 export function ProfileCard() {
+  // Ref to the hidden file input so we can trigger it programmatically
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // useTransition (React 19): lets us mark the Server Action call as a
+  // non-blocking transition. `isPending` becomes true while the action runs,
+  // giving us a loading state without useState boilerplate.
+  const [isPending, startTransition] = useTransition();
+
+  // For programmatic navigation after a successful upload
+  const router = useRouter();
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Pack the file into FormData — this is what the Server Action expects
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    // startTransition wraps the async work so React can track its pending state
+    startTransition(async () => {
+      const result = await analyseResume(formData);
+
+      if (result.success) {
+        // Navigate to the review page on success
+        router.push("/dashboard/resume-review");
+      } else {
+        console.error("Resume analysis failed:", result.error);
+      }
+    });
+
+    // Reset file input so the same file can be re-selected if needed
+    event.target.value = "";
+  }
+
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 transition-all outline-none">
       <div className="flex items-center gap-4">
@@ -30,9 +70,32 @@ export function ProfileCard() {
         </div>
       </div>
       
-      <Button className="w-full sm:w-auto bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900 rounded-lg shadow-sm transition-all sm:ml-auto group font-medium" size="lg">
-        <Upload className="mr-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
-        Upload Resume
+      {/* Hidden file input — triggered by the button click below */}
+      <input
+        type="file"
+        accept=".pdf"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      <Button
+        onClick={() => fileInputRef.current?.click()}
+        disabled={isPending}
+        className="w-full sm:w-auto bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900 rounded-lg shadow-sm transition-all sm:ml-auto group font-medium"
+        size="lg"
+      >
+        {isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Analysing...
+          </>
+        ) : (
+          <>
+            <Upload className="mr-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+            Upload Resume
+          </>
+        )}
       </Button>
     </div>
   );
